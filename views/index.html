@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Romano — Coliseo Multijugador</title>
+    <meta name="description" content="Snake Game multijugador con temática del Coliseo Romano. Italia vs Argentina en una épica batalla de serpientes.">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<header>
+    <div class="top-actions">
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Cambiar modo día o noche">☀️ Modo día</button>
+        <button class="icon-btn" id="soundToggle" type="button" aria-label="Activar o desactivar sonidos">🔊 Sonido</button>
+    </div>
+    <h1>🐍 SNAKE ROMANO</h1>
+    <p>COLISEO MULTIJUGADOR POR TURNOS</p>
+</header>
+
+<div class="game-layout">
+
+    <!-- Panel P1 Italia -->
+    <aside class="player-panel" id="panel1">
+        <h2>⚔ JUGADOR 1</h2>
+        <div class="player-flag">🇮🇹</div>
+        <div class="player-name p1-name">ITALIA</div>
+        <div class="score-label">PUNTOS</div>
+        <div class="score-value" id="p1Score">0</div>
+        <div class="controls-box">
+            <p>
+                <span class="key">W</span> Arriba<br>
+                <span class="key">S</span> Abajo<br>
+                <span class="key">A</span> Izquierda<br>
+                <span class="key">D</span> Derecha
+            </p>
+        </div>
+        <div class="controls-box food-info">
+            <p><img src="assets/sprites/pizza.png" alt="Pizza" class="mini-sprite"> Fruta: Pizza</p>
+        </div>
+    </aside>
+
+    <!-- Canvas + Overlays -->
+    <main class="canvas-column">
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- MENU -->
+            <div id="menuOverlay" class="overlay">
+                <div class="colosseum-deco">🏛️</div>
+                <h2>SNAKE ROMANO</h2>
+                <p class="subtitle">Coliseo — Italia vs Argentina</p>
+                <div class="divider"></div>
+                <p>🍕 P1 Italia: <strong>WASD</strong></p>
+                <p>🧉 P2 Argentina: <strong>↑↓←→</strong></p>
+                <p>⏸ Pausa: <strong>P / ESC</strong></p>
+                <p>🏆 Objetivo: comer, sumar puntos y completar los 7 niveles.</p>
+                <div class="divider"></div>
+                <button class="btn" onclick="game.startGame()">⚔ INICIAR BATALLA</button>
+                <section class="ranking-card compact-ranking">
+                    <h3>🏆 Ranking</h3>
+                    <ol data-ranking-list></ol>
+                    <button class="btn secondary small-btn" onclick="clearScores()">Limpiar ranking</button>
+                </section>
+                <div class="name-config">
+    <div class="name-field">
+        <label for="player1Input">Nombre Jugador 1</label>
+        <input type="text" id="player1Input" maxlength="14" value="Italia" placeholder="Italia">
+    </div>
+
+    <div class="name-field">
+        <label for="player2Input">Nombre Jugador 2</label>
+        <input type="text" id="player2Input" maxlength="14" value="Argentina" placeholder="Argentina">
+    </div>
+</div>
+            </div>
+
+            <!-- PAUSA / CAMBIO DE TURNO -->
+            <div id="pauseOverlay" class="overlay hidden">
+                <div class="colosseum-deco">⏸</div>
+                <h2 id="pauseTitle">PAUSA</h2>
+                <p id="pauseSubtitle">La batalla está en espera...</p>
+                <button class="btn" id="pauseBtn" onclick="game.setState('PLAYING')">▶ CONTINUAR</button>
+                <button class="btn secondary" id="pauseRestartBtn" onclick="game.resetGame()">↺ REINICIAR</button>
+            </div>
+
+            <!-- GAME OVER -->
+            <div id="gameOverOverlay" class="overlay hidden">
+                <div class="colosseum-deco">💀</div>
+                <h2>BATALLA TERMINADA</h2>
+                <div id="goWinner" class="winner-text">🏆 Resultado</div>
+                <div class="divider"></div>
+                <div id="goP1Score" class="score-reveal"></div>
+                <div id="goP2Score" class="score-reveal"></div>
+                <section class="ranking-card compact-ranking">
+                    <h3>🏆 Ranking</h3>
+                    <ol data-ranking-list></ol>
+                </section>
+                <div class="divider"></div>
+                <button class="btn" onclick="game.resetGame()">⚔ REVANCHA</button>
+                <button class="btn secondary" onclick="game.setState('MENU')">🏛 MENÚ</button>
+            </div>
+        </div>
+
+        <div id="levelBar">Nivel 1 — Iniciante</div>
+
+        <!-- Controles táctiles para celulares y tablets -->
+        <section class="touch-controls" aria-label="Controles táctiles">
+            <button data-touch-dir="UP">▲</button>
+            <div class="touch-row">
+                <button data-touch-dir="LEFT">◀</button>
+                <button data-touch-dir="DOWN">▼</button>
+                <button data-touch-dir="RIGHT">▶</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Panel P2 Argentina -->
+    <aside class="player-panel" id="panel2">
+        <h2>⚔ JUGADOR 2</h2>
+        <div class="player-flag">🇦🇷</div>
+        <div class="player-name p2-name">ARGENTINA</div>
+        <div class="score-label">PUNTOS</div>
+        <div class="score-value" id="p2Score">0</div>
+        <div class="controls-box">
+            <p>
+                <span class="key">↑</span> Arriba<br>
+                <span class="key">↓</span> Abajo<br>
+                <span class="key">←</span> Izquierda<br>
+                <span class="key">→</span> Derecha
+            </p>
+        </div>
+        <div class="controls-box food-info">
+            <p><img src="assets/sprites/mate.png" alt="Mate" class="mini-sprite"> Fruta: Mate</p>
+        </div>
+    </aside>
+
+</div>
+
+<!-- Ranking general visible debajo del juego -->
+<section class="ranking-card page-ranking">
+    <h2>🏆 Mejores puntajes</h2>
+    <ol data-ranking-list></ol>
+    <button class="btn secondary small-btn" onclick="clearScores()">Limpiar ranking</button>
+</section>
+
+<!-- Scripts (orden de dependencias) -->
+<script src="scripts/storage.js"></script>
+<script src="scripts/audio.js"></script>
+<script src="scripts/levels.js"></script>
+<script src="scripts/input.js"></script>
+<script src="scripts/collision.js"></script>
+<script src="scripts/food.js"></script>
+<script src="scripts/snake.js"></script>
+<script src="scripts/renderer.js"></script>
+<script src="scripts/game.js"></script>
+
+</body>
+</html>

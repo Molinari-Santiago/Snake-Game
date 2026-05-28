@@ -1,0 +1,14 @@
+{
+  "name": "snake-romano-node",
+  "version": "1.0.0",
+  "description": "Snake Romano multijugador con Node.js, Express, ranking y assets.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}
